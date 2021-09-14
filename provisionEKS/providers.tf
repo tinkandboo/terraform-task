@@ -13,10 +13,6 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2"
     }
-    kustomization = {
-      source  = "kbst/kustomization"
-      version = "0.5.0"
-    }
   }
   backend "s3" {
     region = var.region

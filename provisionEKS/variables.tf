@@ -17,3 +17,9 @@ variable "cluster_name" {
   default     = "my-task-cluster"
   type        = string
 }
+
+variable "app_namespace" {
+  description = "Namespace for game-2048"
+  default     = "game-2048"
+  type        = string
+}

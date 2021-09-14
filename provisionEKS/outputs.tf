@@ -9,3 +9,7 @@ output "private_subnets" {
 output "cluster_id" {
   value = module.vpc.vpc_id
 }
+
+output "game_endpoint_address" {
+  value = module.vpc.vpc_id
+}

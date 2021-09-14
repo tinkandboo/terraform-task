@@ -15,10 +15,10 @@ module "vpc" {
   enable_nat_gateway   = true
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
- 
+
   public_subnet_tags = {
     "kubernetes.io/cluster/my-task-cluster" = "shared"
-    "kubernetes.io/role/elb"                      = "1"
+    "kubernetes.io/role/elb"                = "1"
   }
 
   tags = {

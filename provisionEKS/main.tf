@@ -1,12 +1,12 @@
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "17.18.0"
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "17.18.0"
   cluster_name    = var.cluster_name
   cluster_version = "1.21"
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
 
-node_groups = {
+  node_groups = {
     ng1 = {
       desired_capacity = 1
       max_capacity     = 2
@@ -19,8 +19,8 @@ node_groups = {
     }
   }
 
-# additional policy needed by AWS load balancer controller
-workers_additional_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
+  # TODO: remove admin policy and use least priv model for added policy. additional policy needed by AWS load balancer controller
+  workers_additional_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -29,3 +29,4 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
+
