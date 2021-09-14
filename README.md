@@ -172,46 +172,46 @@ The credentials used will need the following permissions to run the terraform EK
 #Run the following
 #ensure following env variables are set and available in shell used to run terraform
 
-TFSTATE_BUCKET - set this to "terraform-remote-state-bucket-for-my-task"
-TFSTATE_KEY - set this to "staging/terraform.tfstate"
-TFSTATE_REGION - set this to "eu-west-2"
+TFSTATE_BUCKET - set this to "terraform-remote-state-bucket-for-my-task"  
+TFSTATE_KEY - set this to "staging/terraform.tfstate"  
+TFSTATE_REGION - set this to "eu-west-2"  
 
 run env to check above env variables are set correctly
 
-cd provisionEKS/remote-state
-terraform init
-terraform apply
+cd provisionEKS/remote-state  
+terraform init  
+terraform apply  
 
 
-cd ..
-terraform init \
--backend-config="bucket=${TFSTATE_BUCKET}" \
--backend-config="key=${TFSTATE_KEY}" \
--backend-config="region=${TFSTATE_REGION}"
+cd ..  
+terraform init \  
+-backend-config="bucket=${TFSTATE_BUCKET}" \  
+-backend-config="key=${TFSTATE_KEY}" \  
+-backend-config="region=${TFSTATE_REGION}"  
 
-terraform apply
+terraform apply  
 
-# Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)
-aws eks --region eu-west-2 update-kubeconfig --name "my-task-cluster"
-kubectl describe ingress game-2048 -n game-2048 | grep Address | cut -d : -f2 | sed 's/^ *//g'
-Access returned address in browser to play game
+# Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)  
+aws eks --region eu-west-2 update-kubeconfig --name "my-task-cluster"  
+kubectl describe ingress game-2048 -n game-2048 | grep Address | cut -d : -f2 | sed 's/^ *//g'  
+Access returned address in browser to play game  
 
-# Remove EKS cluster and deployed apps
-To destroy stack unfortunately need to manually delete ELB and target group otherwise ELB/target group created by AWS LB controller doesnt get deleted and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step.
+# Remove EKS cluster and deployed apps  
+To destroy stack unfortunately need to manually delete ELB and target group otherwise ELB/target group created by AWS LB controller doesnt get deleted and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step.  
 
-delete relevant loadbalancer via cmdline
-delete relevant targetgroup via cmdline
-terraform destroy
-#Intermittently destroy fails and end up having to delete the following state manually (namespace sometimes ends up in terminating state)
-terraform state rm kubernetes_namespace.game-2048
-#and sometimes have to manually delete the vpc as its hung up on a security group
+delete relevant loadbalancer via cmdline  
+delete relevant targetgroup via cmdline  
+terraform destroy  
+#Intermittently destroy fails and end up having to delete the following state manually (namespace sometimes ends up in terminating state)  
+terraform state rm kubernetes_namespace.game-2048  
+#and sometimes have to manually delete the vpc as its hung up on a security group  
 
-# Remove S3 state file / database lock 
-cd remote-state
-sh ./destroy_remote.sh
+# Remove S3 state file / database lock   
+cd remote-state  
+sh ./destroy_remote.sh  
 
-TODO!!!!!!
-1) split out app deployments from cluster install. This would elevate some of the destroy issues and more sensible for regular app deploys
-2) work out how to delete ELB created by AWS lB controller so tidy destroy can occur
-3) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl
-4) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker
+TODO!!!!!!  
+1) split out app deployments from cluster install. This would elevate some of the destroy issues and more sensible for regular app deploys  
+2) work out how to delete ELB created by AWS lB controller so tidy destroy can occur  
+3) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl  
+4) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker  
