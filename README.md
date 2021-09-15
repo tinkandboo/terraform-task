@@ -184,11 +184,7 @@ terraform apply
 
 
 cd ..  
-terraform init \  
--backend-config="bucket=${TFSTATE_BUCKET}" \  
--backend-config="key=${TFSTATE_KEY}" \  
--backend-config="region=${TFSTATE_REGION}"  
-
+terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY}" -backend-config="region=${TFSTATE_REGION}" 
 terraform apply  
 
 # Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)  

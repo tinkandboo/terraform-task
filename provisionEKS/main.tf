@@ -19,8 +19,14 @@ module "eks" {
     }
   }
 
-  # TODO: remove admin policy and use least priv model for added policy. additional policy needed by AWS load balancer controller
-  workers_additional_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
+  workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+}
+
+resource "aws_iam_policy" "worker_policy" {
+  name        = "worker-policy-${var.cluster_name}"
+  description = "Worker policy for AWS LB controller"
+
+  policy = file("iam-policy.json")
 }
 
 data "aws_eks_cluster" "cluster" {

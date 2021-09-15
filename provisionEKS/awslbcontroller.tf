@@ -17,4 +17,5 @@ resource "helm_release" "aws-load-balancer-controller" {
     name  = "ingress.enabled"
     value = false
   }
+
 }
