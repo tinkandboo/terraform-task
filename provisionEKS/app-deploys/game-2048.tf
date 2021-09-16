@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "game-2048" {
 resource "helm_release" "game-2048" {
   name         = "game-2048"
   chart        = "./charts/game-2048"
-  namespace    = var.app_namespace
+  namespace    = "game-2048"
   replace      = "true"
   force_update = "true"
   set {
@@ -18,7 +18,7 @@ resource "helm_release" "game-2048" {
 
   set {
     name  = "clusterName"
-    value = var.cluster_name
+    value = "${data.terraform_remote_state.network.outputs.cluster_name}"
   }
 
   set {

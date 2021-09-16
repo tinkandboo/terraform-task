@@ -174,6 +174,7 @@ The credentials used will need the following permissions to run the terraform EK
 
 TFSTATE_BUCKET - set this to "terraform-remote-state-bucket-for-my-task"  
 TFSTATE_KEY - set this to "staging/terraform.tfstate"  
+TFSTATE_KEY_APPS - set this to "staging/apps/terraform.tfstate"
 TFSTATE_REGION - set this to "eu-west-2"  
 
 run env to check above env variables are set correctly
@@ -182,10 +183,15 @@ cd provisionEKS/remote-state
 terraform init  
 terraform apply  
 
-
+# Apply EKS / infrastructure config
 cd ..  
 terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY}" -backend-config="region=${TFSTATE_REGION}" 
 terraform apply  
+
+# Apply application deploys config
+
+cd app-deploys
+terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY_APPS}" -backend-config="region=${TFSTATE_REGION}"
 
 # Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)  
 aws eks --region eu-west-2 update-kubeconfig --name "my-task-cluster"  
@@ -194,7 +200,8 @@ Access returned address in browser to play game
 
 # Remove EKS cluster and deployed apps  
 To destroy stack unfortunately need to manually delete ELB and target group otherwise ELB/target group created by AWS LB controller doesnt get deleted and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step.  
-
+#NOTE: If you get Error: Kubernetes cluster unreachable: the server has asked for the client to provide credentials
+then you'll need to do a terraform refresh on the EKS config to allow destroy to work
 delete relevant loadbalancer via cmdline  
 delete relevant targetgroup via cmdline  
 terraform destroy  
@@ -207,7 +214,7 @@ cd remote-state
 sh ./destroy_remote.sh  
 
 TODO!!!!!!  
-1) split out app deployments from cluster install. This would elevate some of the destroy issues and more sensible for regular app deploys  
-2) work out how to delete ELB created by AWS lB controller so tidy destroy can occur  
-3) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl  
-4) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker  
+1) work out how to delete ELB created by AWS lB controller so tidy destroy can occur. Looks like will need to search specific tags and delete 
+2) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl  
+3) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker  
+

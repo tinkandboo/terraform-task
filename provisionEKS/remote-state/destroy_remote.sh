@@ -1,4 +1,7 @@
 # deletes objects and markers in S3 and deletes dynamodb table
+# DANGEROUS SCRIPT IF WRONG BUCKET SET IN ENV VARIABLE!!!!! AS DELETES ALL CONTENTS OF BUCKET
+# IDEALLY WOULD ADD PROCESS TO CREATE FILE IN BUCKET CALLED DESTROY_BUCKET AND TEST FOR EXISTENCE
+# OF FILE IN BUCKET BEFORE ALLOWING SCRIPT TO RUN
 echo '#!/bin/bash' > deleteBucketScript.sh \
 && aws --output text s3api list-object-versions --bucket $TFSTATE_BUCKET \
 | grep -E "^VERSIONS" |\
