@@ -25,5 +25,5 @@ resource "helm_release" "game-2048" {
     name  = "ingress.enabled"
     value = true
   }
-  depends_on = [helm_release.aws-load-balancer-controller]
+  depends_on = [helm_release.aws-load-balancer-controller, kubernetes_namespace.game-2048]
 }

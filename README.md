@@ -62,25 +62,26 @@ terraform apply
 # Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)  
 aws eks --region eu-west-2 update-kubeconfig --name "my-task-cluster"  
 kubectl describe ingress game-2048 -n game-2048 | grep Address | cut -d : -f2 | sed 's/^ *//g'  
-After a short while browse to address returned from the previous command in your favorite browser to play game  
+After a short while (can be up to 3 mins before LB is in active state)  browse to address returned from the previous command in your favorite browser to play game  
 
 # Remove EKS cluster and deployed apps  
-To destroy stack unfortunately need to manually delete ELB and target group otherwise ELB/target group created by AWS LB controller doesnt get deleted and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step.  
+To destroy stack unfortunately need to manually delete ALB and LB target group because although the ALB is deleted automatically the target group created by AWS LB controller doesnt get deleted for some reason and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step but at moment you have to delete both ALB and TG beforehand  
 #NOTE: If you get Error: Kubernetes cluster unreachable: the server has asked for the client to provide credentials  
-then you'll need to do a terraform refresh on the EKS config to allow destroy to work  
-delete relevant loadbalancer via cmdline  
-delete relevant targetgroup via cmdline  
+then you'll need to do a "terraform refresh" on the EKS config in the parent directory to allow the app config destroy to work  
+
+delete relevant LB/targetgroup via cmdline 
+
 terraform destroy  
-#Intermittently destroy fails and end up having to delete the following state manually (namespace sometimes ends up in terminating state)  
-terraform state rm kubernetes_namespace.game-2048  
-#and sometimes have to manually delete the vpc as its hung up on a security group  
+
 
 # Remove S3 state file / database lock   
 cd remote-state  
 sh ./destroy_remote.sh  
 
 TODO!!!!!!  
-1) work out how to delete ELB created by AWS lB controller so tidy destroy can occur. Looks like will need to search specific tags and delete 
+1) work out how to delete LB target group created by AWS lB controller so tidy destroy can occur. Looks like will need to search specific tags and delete as a workaround
 2) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl  
 3) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker  
+4) fix intermitent issue reported below (rerunning terraform apply works)
 
+ Error: cannot patch "game-2048" with kind Ingress: Internal error occurred: failed calling webhook "vingress.elbv2.k8s.aws": Post "https://aws-load-balancer-webhook-service.kube-system.svc:443/validate-networking-v1beta1-ingress?timeout=10s": dial tcp 10.0.1.199:9443: connect: connection refusedj4) fix intermitent issue Error: cannot patch "game-2048" with kind Ingress: Internal error occurred: failed calling webhook "vingress.elbv2.k8s.aws": Post "https://aws-load-balancer-webhook-service.kube-system.svc:443/validate-networking-v1beta1-ingress?timeout=10s": dial tcp 10.0.1.199:9443: connect: connection refusedj4) fix intermitent issue Error: cannot patch "game-2048" with kind Ingress: Internal error occurred: failed calling webhook "vingress.elbv2.k8s.aws": Post "https://aws-load-balancer-webhook-service.kube-system.svc:443/validate-networking-v1beta1-ingress?timeout=10s": dial tcp 10.0.1.199:9443: connect: connection refusedj4) fix intermitent issue Error: cannot patch "game-2048" with kind Ingress: Internal error occurred: failed calling webhook "vingress.elbv2.k8s.aws": Post "https://aws-load-balancer-webhook-service.kube-system.svc:443/validate-networking-v1beta1-ingress?timeout=10s": dial tcp 10.0.1.199:9443: connect: connection refusedj

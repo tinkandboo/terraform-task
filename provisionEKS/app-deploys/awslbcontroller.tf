@@ -12,8 +12,9 @@ resource "helm_release" "aws-load-balancer-controller" {
   namespace  = "kube-system"
   chart      = "aws-load-balancer-controller"
 
-  wait    = true
-  timeout = 1200
+  wait          = true
+  timeout       = 1200
+  wait_for_jobs = true
 
 
   set {
@@ -25,5 +26,5 @@ resource "helm_release" "aws-load-balancer-controller" {
     name  = "ingress.enabled"
     value = false
   }
-
+  depends_on = [kubernetes_namespace.game-2048]
 }
