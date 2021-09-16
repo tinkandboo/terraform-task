@@ -27,21 +27,22 @@ Please consider the following:
 
 #Dependancies
 
-These steps assume that the shell you are running these steps from have default valid credentials setup for accessing an AWS account 
+These steps assume that the shell you are running these steps from have default valid credentials setup for accessing an AWS account  
+AWS cli is available
 
 The credentials used will need the following IAM permissions to run the terraform EKS setup
 https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md
 
 
 #Run the following
-#ensure following env variables are set and available in shell used to run terraform
+#ensure following env variables are set and available in shell used to run terraform  
 
 TFSTATE_BUCKET - set this to "terraform-remote-state-bucket-for-my-task"  
 TFSTATE_KEY - set this to "staging/terraform.tfstate"  
 TFSTATE_KEY_APPS - set this to "staging/apps/terraform.tfstate"
 TFSTATE_REGION - set this to "eu-west-2"  
 
-run env to check above env variables are set correctly
+run env to check above env variables are set correctly  
 
 cd provisionEKS/remote-state  
 terraform init  
@@ -49,18 +50,19 @@ terraform apply
 
 # Apply EKS / infrastructure config
 cd ..  
-terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY}" -backend-config="region=${TFSTATE_REGION}" 
+terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY}" -backend-config="region=${TFSTATE_REGION}"  
 terraform apply  
 
-# Apply application deploys config
+# Apply application deploys config  
 
-cd app-deploys
-terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY_APPS}" -backend-config="region=${TFSTATE_REGION}"
+cd app-deploys  
+terraform init -backend-config="bucket=${TFSTATE_BUCKET}" -backend-config="key=${TFSTATE_KEY_APPS}" -backend-config="region=${TFSTATE_REGION}"  
+terraform apply
 
 # Retrieve DNS address of LB for accessing game (assumes kubectl is accessible from your shell and using default cluster name and namespace)  
 aws eks --region eu-west-2 update-kubeconfig --name "my-task-cluster"  
 kubectl describe ingress game-2048 -n game-2048 | grep Address | cut -d : -f2 | sed 's/^ *//g'  
-Access returned address in browser to play game  
+After a short while browse to address returned from the previous command in your favorite browser to play game  
 
 # Remove EKS cluster and deployed apps  
 To destroy stack unfortunately need to manually delete ELB and target group otherwise ELB/target group created by AWS LB controller doesnt get deleted and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step.  

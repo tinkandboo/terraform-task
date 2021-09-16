@@ -21,19 +21,19 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-2" 
+  region = "eu-west-2"
 }
 
 provider "kubernetes" {
-  host                   = "${data.terraform_remote_state.network.outputs.cluster_endpoint}"
+  host                   = data.terraform_remote_state.network.outputs.cluster_endpoint
   cluster_ca_certificate = base64decode("${data.terraform_remote_state.network.outputs.cluster_auth}")
-  token                  = "${data.terraform_remote_state.network.outputs.cluster_token}"
+  token                  = data.terraform_remote_state.network.outputs.cluster_token
 }
 
 provider "helm" {
   kubernetes {
-  host                   = "${data.terraform_remote_state.network.outputs.cluster_endpoint}"
-  cluster_ca_certificate = base64decode("${data.terraform_remote_state.network.outputs.cluster_auth}")
-  token                  = "${data.terraform_remote_state.network.outputs.cluster_token}"
+    host                   = data.terraform_remote_state.network.outputs.cluster_endpoint
+    cluster_ca_certificate = base64decode("${data.terraform_remote_state.network.outputs.cluster_auth}")
+    token                  = data.terraform_remote_state.network.outputs.cluster_token
   }
 }

@@ -18,11 +18,12 @@ resource "helm_release" "game-2048" {
 
   set {
     name  = "clusterName"
-    value = "${data.terraform_remote_state.network.outputs.cluster_name}"
+    value = data.terraform_remote_state.network.outputs.cluster_name
   }
 
   set {
     name  = "ingress.enabled"
     value = true
   }
+  depends_on = [helm_release.aws-load-balancer-controller]
 }

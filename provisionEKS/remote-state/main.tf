@@ -1,9 +1,9 @@
 provider "aws" {
-   region = "eu-west-2"
+  region = "eu-west-2"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
- bucket = "terraform-remote-state-bucket-for-my-task"
+  bucket = "terraform-remote-state-bucket-for-my-task"
   # Enable versioning so we can see the full revision history of our
   # state files
   versioning {

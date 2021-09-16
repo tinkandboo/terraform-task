@@ -1,10 +1,10 @@
 data "terraform_remote_state" "network" {
-    backend = "s3"
-    config = {
-        bucket = "terraform-remote-state-bucket-for-my-task"
-        key = "staging/terraform.tfstate"
-        region = "eu-west-2"
-    }
+  backend = "s3"
+  config = {
+    bucket = "terraform-remote-state-bucket-for-my-task"
+    key    = "staging/terraform.tfstate"
+    region = "eu-west-2"
+  }
 }
 resource "helm_release" "aws-load-balancer-controller" {
   name       = "aws-load-balancer-controller"
@@ -18,7 +18,7 @@ resource "helm_release" "aws-load-balancer-controller" {
 
   set {
     name  = "clusterName"
-    value = "${data.terraform_remote_state.network.outputs.cluster_name}"
+    value = data.terraform_remote_state.network.outputs.cluster_name
   }
 
   set {
