@@ -34,7 +34,7 @@ The credentials used will need the following IAM permissions to run the terrafor
 https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md
 
 
-#Run the following
+#Run the following  
 #ensure following env variables are set and available in shell used to run terraform  
 
 TFSTATE_BUCKET - set this to "terraform-remote-state-bucket-for-my-task"  
