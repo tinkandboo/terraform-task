@@ -65,11 +65,9 @@ kubectl describe ingress game-2048 -n game-2048 | grep Address | cut -d : -f2 | 
 After a short while (can be up to 3 mins before LB is in active state)  browse to address returned from the previous command in your favorite browser to play game  
 
 # Remove EKS cluster and deployed apps  
-To destroy stack unfortunately need to manually delete ALB and LB target group because although the ALB is deleted automatically the target group created by AWS LB controller doesnt get deleted for some reason and causes destroy to fail leaving orphaned resources. Im working on fixing/automating this step but at moment you have to delete both ALB and TG beforehand  
 #NOTE: If you get Error: Kubernetes cluster unreachable: the server has asked for the client to provide credentials  
 then you'll need to do a "terraform refresh" on the EKS config in the parent directory to allow the app config destroy to work  
 
-delete relevant LB/targetgroup via cmdline 
 
 terraform destroy  
 
@@ -79,7 +77,6 @@ cd remote-state
 sh ./destroy_remote.sh  
 
 TODO!!!!!!  
-1) work out how to delete LB target group created by AWS lB controller so tidy destroy can occur. Looks like will need to search specific tags and delete as a workaround
 2) output DNS address for LB endpoint to 2048 URL used to access game via terraform outputs rather than using kubectl  
 3) with time would have liked to have run all this in a jenkinsfile with terraform client running in docker  
 4) fix intermitent issue reported below (rerunning terraform apply works)
